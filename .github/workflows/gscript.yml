@@ -1,0 +1,45 @@
+name: Label & Comment Issues
+
+on:
+  issues:
+    types:
+      - reopened
+      - opened
+      - closed  # Lisätty sulkemisen tunnistus
+
+jobs:
+  label_issues:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Attach label to issues
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ["issue", "fix"]
+            })
+
+      - name: Comment on new issue
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+            Thanks for opening this issue! We'll take a look as soon as possible.
+
+  comment_on_close:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    if: github.event.action == 'closed'  # Tämä varmistaa, että job suoritetaan vain, kun issue suljetaan
+    steps:
+      - name: Comment when issue is closed
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+            The issue is now resolved.
