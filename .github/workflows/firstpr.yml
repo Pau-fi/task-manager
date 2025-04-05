@@ -1,0 +1,19 @@
+name: First interaction
+
+on:
+  pull_request:
+    types: [opened]
+
+permissions:
+  pull-requests: write  # Tarvitaan, jotta voidaan kommentoida PR:ään
+
+jobs:
+  greet-first-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: First interaction
+        uses: actions/first-interaction@v1.3.0
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          pr-message: |
+            Onnittelut ensimmäisestä pull requestista!
